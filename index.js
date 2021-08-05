@@ -33,8 +33,6 @@ client.connect((err) => {
 
   app.get("/users", (req, res) => {
     usersCollection.find({}).toArray((err, documents) => {
-      console.log(err);
-      console.log(documents);
       res.send(documents);
     });
   });
