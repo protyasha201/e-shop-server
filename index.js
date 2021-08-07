@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const { MongoClient } = require("mongodb");
 require("dotenv").config();
+const ObjectID = require("mongodb").ObjectID;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -17,6 +18,7 @@ const client = new MongoClient(uri, {
 });
 client.connect((err) => {
   const usersCollection = client.db("eShop").collection("users");
+  const adminsCollection = client.db("eShop").collection("admins");
   // perform actions on the collection object
 
   app.post("/createUser", (req, res) => {
@@ -31,8 +33,36 @@ client.connect((err) => {
       });
   });
 
+  app.post("/addAdmin", (req, res) => {
+    const admin = req.body;
+    adminsCollection
+      .insertOne(admin)
+      .then((result) => {
+        res.send(result.insertedCount > 0);
+      })
+      .then((err) => {
+        console.log(err);
+      });
+  });
+
+  app.delete("/deleteAdmin/:id", (req, res) => {
+    adminsCollection
+      .deleteOne({ _id: ObjectID(req.params.id) })
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  });
   app.get("/users", (req, res) => {
     usersCollection.find({}).toArray((err, documents) => {
+      res.send(documents);
+    });
+  });
+
+  app.get("/admins", (req, res) => {
+    adminsCollection.find({}).toArray((err, documents) => {
       res.send(documents);
     });
   });
