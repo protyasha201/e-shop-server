@@ -49,12 +49,24 @@ client.connect((err) => {
     adminsCollection
       .deleteOne({ _id: ObjectID(req.params.id) })
       .then((result) => {
-        console.log(result);
+        res.send(result.deletedCount > 0);
       })
       .catch((err) => {
         console.log(err);
       });
   });
+
+  app.delete("/deleteUser/:id", (req, res) => {
+    usersCollection
+      .deleteOne({ _id: ObjectID(req.params.id) })
+      .then((result) => {
+        res.send(result.deletedCount > 0);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  });
+
   app.get("/users", (req, res) => {
     usersCollection.find({}).toArray((err, documents) => {
       res.send(documents);
