@@ -19,11 +19,25 @@ const client = new MongoClient(uri, {
 client.connect((err) => {
   const usersCollection = client.db("eShop").collection("users");
   const adminsCollection = client.db("eShop").collection("admins");
+  const productsCollection = client.db("eShop").collection("products");
+
   // perform actions on the collection object
 
   app.post("/createUser", (req, res) => {
     const user = req.body;
     usersCollection
+      .insertOne(user)
+      .then((result) => {
+        res.send(result.insertedCount > 0);
+      })
+      .then((err) => {
+        console.log(err);
+      });
+  });
+
+  app.post("/addProduct", (req, res) => {
+    const user = req.body;
+    productsCollection
       .insertOne(user)
       .then((result) => {
         res.send(result.insertedCount > 0);
