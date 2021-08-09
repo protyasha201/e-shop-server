@@ -67,6 +67,37 @@ client.connect((err) => {
       });
   });
 
+  app.patch("/updateUser", (req, res) => {
+    const user = {
+      userName: req.body.userName,
+      email: req.body.email,
+      photoUrl: req.body.photoUrl,
+      password: req.body.password,
+      confirmPassword: req.body.confirmPassword,
+      mobileNumber: req.body.mobileNumber,
+      country: req.body.country,
+      state: req.body.state,
+      city: req.body.city,
+      house: req.body.house,
+    };
+    const id = req.body._id;
+    usersCollection
+      .updateOne({ _id: ObjectID(id) }, { $set: user })
+      .then((result) => {
+        res.send(result.modifiedCount > 0);
+      })
+      .then((err) => {
+        console.log(err);
+      });
+  });
+
+  app.get("/user/:id", (req, res) => {
+    const id = req.params.id;
+    usersCollection.find({ _id: ObjectID(id) }).toArray((err, documents) => {
+      res.send(documents);
+    });
+  });
+
   app.get("/users", (req, res) => {
     usersCollection.find({}).toArray((err, documents) => {
       res.send(documents);
