@@ -19,7 +19,11 @@ const client = new MongoClient(uri, {
 client.connect((err) => {
   const usersCollection = client.db("eShop").collection("users");
   const adminsCollection = client.db("eShop").collection("admins");
-  const productsCollection = client.db("eShop").collection("products");
+  const productsByCategoryCollection = client
+    .db("eShop")
+    .collection("productsWithCategory");
+  const allProductsCollection = client.db("eShop").collection("allProducts");
+  const offersCollection = client.db("eShop").collection("offers");
 
   // perform actions on the collection object
 
@@ -35,10 +39,22 @@ client.connect((err) => {
       });
   });
 
+  app.post("/addProductWithCategory", (req, res) => {
+    const product = req.body;
+    productsByCategoryCollection
+      .insertOne(product)
+      .then((result) => {
+        res.send(result.insertedCount > 0);
+      })
+      .then((err) => {
+        console.log(err);
+      });
+  });
+
   app.post("/addProduct", (req, res) => {
-    const user = req.body;
-    productsCollection
-      .insertOne(user)
+    const product = req.body;
+    allProductsCollection
+      .insertOne(product)
       .then((result) => {
         res.send(result.insertedCount > 0);
       })
@@ -51,6 +67,18 @@ client.connect((err) => {
     const admin = req.body;
     adminsCollection
       .insertOne(admin)
+      .then((result) => {
+        res.send(result.insertedCount > 0);
+      })
+      .then((err) => {
+        console.log(err);
+      });
+  });
+
+  app.post("/addOffer", (req, res) => {
+    const offers = req.body;
+    offersCollection
+      .insertOne(offers)
       .then((result) => {
         res.send(result.insertedCount > 0);
       })
@@ -105,6 +133,22 @@ client.connect((err) => {
       });
   });
 
+  app.patch("/updateProductsByCategory", (req, res) => {
+    const newProduct = req.body;
+    const id = req.body._id;
+    productsByCategoryCollection
+      .updateOne(
+        { category: req.body.category },
+        { $push: { allProducts: newProduct } }
+      )
+      .then((result) => {
+        res.send(result.modifiedCount > 0);
+      })
+      .then((err) => {
+        console.log(err);
+      });
+  });
+
   app.get("/user/:id", (req, res) => {
     const id = req.params.id;
     usersCollection.find({ _id: ObjectID(id) }).toArray((err, documents) => {
@@ -114,6 +158,18 @@ client.connect((err) => {
 
   app.get("/users", (req, res) => {
     usersCollection.find({}).toArray((err, documents) => {
+      res.send(documents);
+    });
+  });
+
+  app.get("/allProducts", (req, res) => {
+    allProductsCollection.find({}).toArray((err, documents) => {
+      res.send(documents);
+    });
+  });
+
+  app.get("/allProductsByCategory", (req, res) => {
+    productsByCategoryCollection.find({}).toArray((err, documents) => {
       res.send(documents);
     });
   });
