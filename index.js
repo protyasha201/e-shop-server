@@ -174,6 +174,15 @@ client.connect((err) => {
     });
   });
 
+  app.get("/productDetails/:id", (req, res) => {
+    const id = req.params.id;
+    allProductsCollection
+      .find({ _id: ObjectID(id) })
+      .toArray((err, documents) => {
+        res.send(documents);
+      });
+  });
+
   app.get("/admins", (req, res) => {
     adminsCollection.find({}).toArray((err, documents) => {
       res.send(documents);
