@@ -24,6 +24,7 @@ client.connect((err) => {
     .collection("productsWithCategory");
   const allProductsCollection = client.db("eShop").collection("allProducts");
   const offersCollection = client.db("eShop").collection("offers");
+  const cartsCollection = client.db("eShop").collection("carts");
 
   // perform actions on the collection object
 
@@ -87,6 +88,18 @@ client.connect((err) => {
       });
   });
 
+  app.post("/addToCart", (req, res) => {
+    const cart = req.body;
+    cartsCollection
+      .insertOne(cart)
+      .then((result) => {
+        res.send(result.insertedCount > 0);
+      })
+      .then((err) => {
+        console.log(err);
+      });
+  });
+
   app.delete("/deleteAdmin/:id", (req, res) => {
     adminsCollection
       .deleteOne({ _id: ObjectID(req.params.id) })
@@ -100,6 +113,28 @@ client.connect((err) => {
 
   app.delete("/deleteUser/:id", (req, res) => {
     usersCollection
+      .deleteOne({ _id: ObjectID(req.params.id) })
+      .then((result) => {
+        res.send(result.deletedCount > 0);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  });
+
+  app.delete("/removeFromCart/:id", (req, res) => {
+    cartsCollection
+      .deleteOne({ _id: ObjectID(req.params.id) })
+      .then((result) => {
+        res.send(result.deletedCount > 0);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  });
+
+  app.delete("/deleteOffer/:id", (req, res) => {
+    offersCollection
       .deleteOne({ _id: ObjectID(req.params.id) })
       .then((result) => {
         res.send(result.deletedCount > 0);
@@ -152,6 +187,27 @@ client.connect((err) => {
   app.get("/user/:id", (req, res) => {
     const id = req.params.id;
     usersCollection.find({ _id: ObjectID(id) }).toArray((err, documents) => {
+      res.send(documents);
+    });
+  });
+
+  app.get("/offerDetails/:id", (req, res) => {
+    const id = req.params.id;
+    offersCollection.find({ _id: ObjectID(id) }).toArray((err, documents) => {
+      res.send(documents);
+    });
+  });
+
+  app.get("/cart", (req, res) => {
+    cartsCollection
+      .find({ email: req.query.email })
+      .toArray((err, documents) => {
+        res.send(documents);
+      });
+  });
+
+  app.get("/offers", (req, res) => {
+    offersCollection.find({}).toArray((err, documents) => {
       res.send(documents);
     });
   });
