@@ -144,6 +144,17 @@ client.connect((err) => {
       });
   });
 
+  app.delete("/deleteProduct/:id", (req, res) => {
+    allProductsCollection
+      .deleteOne({ _id: ObjectID(req.params.id) })
+      .then((result) => {
+        res.send(result.deletedCount > 0);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  });
+
   app.patch("/updateUser", (req, res) => {
     const user = {
       userName: req.body.userName,
@@ -194,7 +205,6 @@ client.connect((err) => {
         { $pull: { allProducts: { _id: childId } } }
       )
       .then((result) => {
-        console.log(result);
         res.send(result.modifiedCount > 0);
       })
       .then((err) => {
