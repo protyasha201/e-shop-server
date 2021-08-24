@@ -184,6 +184,24 @@ client.connect((err) => {
       });
   });
 
+  app.patch("/deleteProductByCategory", (req, res) => {
+    const product = req.body;
+    const parentId = product.parentId;
+    const childId = product.childId;
+    productsByCategoryCollection
+      .updateOne(
+        { _id: ObjectID(parentId) },
+        { $pull: { allProducts: { _id: childId } } }
+      )
+      .then((result) => {
+        console.log(result);
+        res.send(result.modifiedCount > 0);
+      })
+      .then((err) => {
+        console.log(err);
+      });
+  });
+
   app.get("/user/:id", (req, res) => {
     const id = req.params.id;
     usersCollection.find({ _id: ObjectID(id) }).toArray((err, documents) => {
