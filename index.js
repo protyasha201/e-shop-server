@@ -179,6 +179,26 @@ client.connect((err) => {
       });
   });
 
+  app.patch("/updateProduct", (req, res) => {
+    const product = {
+      productName: req.body.productName,
+      category: req.body.category,
+      subCategory: req.body.subCategory,
+      productPrice: req.body.productPrice,
+      description: req.body.description,
+      features: req.body.features,
+    };
+    const id = req.body._id;
+    allProductsCollection
+      .updateOne({ _id: ObjectID(id) }, { $set: product })
+      .then((result) => {
+        res.send(result.modifiedCount > 0);
+      })
+      .then((err) => {
+        console.log(err);
+      });
+  });
+
   app.patch("/updateProductsByCategory", (req, res) => {
     const newProduct = req.body;
     const id = req.body._id;
