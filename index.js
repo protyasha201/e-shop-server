@@ -186,12 +186,49 @@ client.connect((err) => {
       subCategory: req.body.subCategory,
       productPrice: req.body.productPrice,
       description: req.body.description,
+      productImage: req.body.productImage,
       features: req.body.features,
     };
     const id = req.body._id;
     allProductsCollection
       .updateOne({ _id: ObjectID(id) }, { $set: product })
       .then((result) => {
+        res.send(result.modifiedCount > 0);
+      })
+      .then((err) => {
+        console.log(err);
+      });
+  });
+
+  app.patch("/updateProduct2", (req, res) => {
+    const product = {
+      productName: req.body.productName,
+      category: req.body.category,
+      subCategory: req.body.subCategory,
+      productPrice: req.body.productPrice,
+      description: req.body.description,
+      productImage: req.body.productImage,
+      features: req.body.features,
+    };
+    const parentId = req.body.parentId;
+    const childId = req.body._id;
+    productsByCategoryCollection
+      .updateOne(
+        { _id: ObjectID(parentId), "allProducts._id": childId },
+        {
+          $set: {
+            "allProducts.$.productName": product.productName,
+            "allProducts.$.category": product.category,
+            "allProducts.$.subCategory": product.subCategory,
+            "allProducts.$.productPrice": product.productPrice,
+            "allProducts.$.description": product.description,
+            "allProducts.$.productImage": product.productImage,
+            "allProducts.$.features": product.features,
+          },
+        }
+      )
+      .then((result) => {
+        console.log(result);
         res.send(result.modifiedCount > 0);
       })
       .then((err) => {
