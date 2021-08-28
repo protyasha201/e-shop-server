@@ -200,6 +200,21 @@ client.connect((err) => {
       });
   });
 
+  app.patch("/updateAdmin", (req, res) => {
+    const admin = {
+      adminEmail: req.body.adminEmail,
+    };
+    const id = req.body._id;
+    adminsCollection
+      .updateOne({ _id: ObjectID(id) }, { $set: admin })
+      .then((result) => {
+        res.send(result.modifiedCount > 0);
+      })
+      .then((err) => {
+        console.log(err);
+      });
+  });
+
   app.patch("/updateProduct2", (req, res) => {
     const product = {
       productName: req.body.productName,
@@ -228,7 +243,6 @@ client.connect((err) => {
         }
       )
       .then((result) => {
-        console.log(result);
         res.send(result.modifiedCount > 0);
       })
       .then((err) => {
@@ -272,6 +286,13 @@ client.connect((err) => {
   app.get("/user/:id", (req, res) => {
     const id = req.params.id;
     usersCollection.find({ _id: ObjectID(id) }).toArray((err, documents) => {
+      res.send(documents);
+    });
+  });
+
+  app.get("/adminDetails/:id", (req, res) => {
+    const id = req.params.id;
+    adminsCollection.find({ _id: ObjectID(id) }).toArray((err, documents) => {
       res.send(documents);
     });
   });
