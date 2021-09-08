@@ -262,6 +262,28 @@ client.connect((err) => {
       });
   });
 
+  app.patch("/updateStatus", (req, res) => {
+    const status = req.body.status;
+    const parentKey = req.body.key;
+    const childKey = req.body.key2;
+
+    ordersCollection
+      .updateOne(
+        { key: parentKey, "orderedProducts.key2": childKey },
+        {
+          $set: {
+            "orderedProducts.$.status": status,
+          },
+        }
+      )
+      .then((result) => {
+        res.send(result.modifiedCount > 0);
+      })
+      .then((err) => {
+        console.log(err);
+      });
+  });
+
   app.patch("/updateProductsByCategory", (req, res) => {
     const newProduct = req.body;
     const id = req.body._id;
