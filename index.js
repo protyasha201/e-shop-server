@@ -25,7 +25,7 @@ client.connect((err) => {
   const allProductsCollection = client.db("eShop").collection("allProducts");
   const offersCollection = client.db("eShop").collection("offers");
   const cartsCollection = client.db("eShop").collection("carts");
-
+  const ordersCollection = client.db("eShop").collection("orders");
   // perform actions on the collection object
 
   app.post("/createUser", (req, res) => {
@@ -56,6 +56,18 @@ client.connect((err) => {
     const product = req.body;
     allProductsCollection
       .insertOne(product)
+      .then((result) => {
+        res.send(result.insertedCount > 0);
+      })
+      .then((err) => {
+        console.log(err);
+      });
+  });
+
+  app.post("/addOrder", (req, res) => {
+    const orderDetails = req.body;
+    ordersCollection
+      .insertOne(orderDetails)
       .then((result) => {
         res.send(result.insertedCount > 0);
       })
@@ -314,6 +326,12 @@ client.connect((err) => {
 
   app.get("/offers", (req, res) => {
     offersCollection.find({}).toArray((err, documents) => {
+      res.send(documents);
+    });
+  });
+
+  app.get("/orders", (req, res) => {
+    ordersCollection.find({}).toArray((err, documents) => {
       res.send(documents);
     });
   });
