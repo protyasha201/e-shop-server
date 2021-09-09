@@ -317,6 +317,23 @@ client.connect((err) => {
       });
   });
 
+  app.patch("/deleteOrder", (req, res) => {
+    const product = req.body;
+    const parentKey = product.key;
+    const childKey = product.key2;
+    ordersCollection
+      .updateOne(
+        { key: parentKey },
+        { $pull: { orderedProducts: { key2: childKey } } }
+      )
+      .then((result) => {
+        res.send(result.modifiedCount > 0);
+      })
+      .then((err) => {
+        console.log(err);
+      });
+  });
+
   app.get("/user/:id", (req, res) => {
     const id = req.params.id;
     usersCollection.find({ _id: ObjectID(id) }).toArray((err, documents) => {
