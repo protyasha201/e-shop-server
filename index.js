@@ -341,6 +341,15 @@ client.connect((err) => {
     });
   });
 
+  app.get("/orderDetails/:parentKey", (req, res) => {
+    const parentKey = req.params.parentKey;
+    ordersCollection
+      .find({ key: parseInt(parentKey) })
+      .toArray((err, documents) => {
+        res.send(documents);
+      });
+  });
+
   app.get("/adminDetails/:id", (req, res) => {
     const id = req.params.id;
     adminsCollection.find({ _id: ObjectID(id) }).toArray((err, documents) => {
