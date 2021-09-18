@@ -381,6 +381,14 @@ client.connect((err) => {
       });
   });
 
+  app.get("/userOrders", (req, res) => {
+    ordersCollection
+      .find({ email: req.query.email })
+      .toArray((err, documents) => {
+        res.send(documents);
+      });
+  });
+
   app.get("/offers", (req, res) => {
     offersCollection.find({}).toArray((err, documents) => {
       res.send(documents);
