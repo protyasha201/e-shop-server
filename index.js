@@ -357,6 +357,15 @@ client.connect((err) => {
     });
   });
 
+  app.get("/categoryProducts/:id", (req, res) => {
+    const id = req.params.id;
+    productsByCategoryCollection
+      .find({ _id: ObjectID(id) })
+      .toArray((err, documents) => {
+        res.send(documents);
+      });
+  });
+
   app.get("/offerDetails/:id", (req, res) => {
     const id = req.params.id;
     offersCollection.find({ _id: ObjectID(id) }).toArray((err, documents) => {
